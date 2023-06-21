@@ -1,0 +1,6 @@
+error: the following required arguments were not provided:
+  <STRINGS>...
+
+Usage: echor.exe <STRINGS>...
+
+For more information, try '--help'.
