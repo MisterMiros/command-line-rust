@@ -4,6 +4,7 @@ use clap::Parser;
 #[command(author, version, about, long_about = None)]
 struct Args {
     /// A list of strings to display
+    #[arg(required = true)]
     strings: Vec<String>,
     
     /// Do not print the trailing new line character
