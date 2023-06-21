@@ -9,3 +9,8 @@ Exercises from the *"Command-Line Rust" by Ken Youens-Clark* ([link](https://www
 ### False
 * Location: [hello/src/bin/false.rs](hello/src/bin/false.rs)
 * Description: Returns exit code of 1 (failure)
+
+
+### Echo
+* Location: [echor/src/main.rs"](echor/src/main.rs)
+* Description: Prints given strings
