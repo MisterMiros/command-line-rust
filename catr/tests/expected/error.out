@@ -1,0 +1,7 @@
+error: the following required arguments were not provided:
+  <FILES>...
+
+Usage: catr.exe <FILES>...
+
+For more information, try '--help'.
+
