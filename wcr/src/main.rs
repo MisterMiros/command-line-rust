@@ -1,3 +1,6 @@
 fn main() {
-    println!("Hello, world!");
+    if let Err(error) = wcr::run() {
+        eprintln!("{}", error);
+        std::process::exit(1);
+    }
 }
