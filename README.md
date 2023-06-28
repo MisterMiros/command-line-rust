@@ -10,7 +10,6 @@ Exercises from the *"Command-Line Rust" by Ken Youens-Clark* ([link](https://www
 * Location: [hello/src/bin/false.rs](hello/src/bin/false.rs)
 * Description: Returns exit code of 1 (failure)
 
-
 ### Echor
 * Location: [echor/src/main.rs"](echor/src/main.rs)
 * Description: Prints given strings
@@ -18,3 +17,11 @@ Exercises from the *"Command-Line Rust" by Ken Youens-Clark* ([link](https://www
 ### Catr
 * Location: [catr/src/main.rs"](catr/src/main.rs)
 * Description: Outputs contents of given files or of stdin
+
+### Headr
+* Location: [headr/src/main.rs"](headr/src/main.rs)
+* Description: Outputs the top lines or bytes of given files or of stdin
+
+### Wcr
+* Location: [wcr/src/main.rs"](wcr/src/main.rs)
+* Description: Counts the amount of lines, words and bytes/chars of given fiels or of stdin
