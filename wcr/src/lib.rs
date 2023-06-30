@@ -37,6 +37,7 @@ impl AddAssign<&FileInfo> for FileInfo {
 }
 
 #[derive(Debug, Parser)]
+#[command(author, version, about)]
 struct Args {
     #[arg()]
     files: Vec<String>,
