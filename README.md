@@ -11,17 +11,21 @@ Exercises from the *"Command-Line Rust" by Ken Youens-Clark* ([link](https://www
 * Description: Returns exit code of 1 (failure)
 
 ### Echor
-* Location: [echor/src/main.rs"](echor/src/main.rs)
+* Location: [echor/src/main.rs](echor/src/main.rs)
 * Description: Prints given strings
 
 ### Catr
-* Location: [catr/src/main.rs"](catr/src/main.rs)
+* Location: [catr/src/main.rs](catr/src/main.rs)
 * Description: Outputs contents of given files or of stdin
 
 ### Headr
-* Location: [headr/src/main.rs"](headr/src/main.rs)
+* Location: [headr/src/main.rs](headr/src/main.rs)
 * Description: Outputs the top lines or bytes of given files or of stdin
 
 ### Wcr
-* Location: [wcr/src/main.rs"](wcr/src/main.rs)
-* Description: Counts the amount of lines, words and bytes/chars of given fiels or of stdin
+* Location: [wcr/src/main.rs](wcr/src/main.rs)
+* Description: Counts the amount of lines, words and bytes/chars of given files or of stdin
+
+### Uniqr
+* Location: [uniqr/src/main.rs](uniqr/src/main.rs)
+* Description: Shrunks duplicate lines with optional counting of given files or of stdin
