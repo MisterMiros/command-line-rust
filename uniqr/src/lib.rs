@@ -53,7 +53,7 @@ fn write_lines(input: Box<dyn BufRead>, output: &mut BufWriter<Box<dyn Write>>, 
 }
 
 pub fn run() -> MyResult<()> {
-    let args = Args::try_parse()?;
+    let args = Args::parse();
     let input = shared_utils::open(&args.input_file.as_ref().map(|s| s.as_str()))?;
     let mut output: BufWriter<Box<dyn Write>> = match args.output_file.as_ref().map(|s| s.as_str()) {
         None | Some("-") => {

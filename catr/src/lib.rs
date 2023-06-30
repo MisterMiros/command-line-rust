@@ -72,7 +72,7 @@ fn print_line(line: &str, counter: &mut Counter) {
 }
 
 pub fn run() -> MyResult<()> {
-    let args = Args::try_parse()?;
+    let args = Args::parse();
     let mut counter = Counter::from(&args);
     for filename in &args.files {
         let file = open(&filename);

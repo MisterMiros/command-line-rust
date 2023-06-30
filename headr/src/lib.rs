@@ -62,7 +62,7 @@ fn print_file(mut file: Box<dyn BufRead>, mode: &Mode) -> MyResult<()> {
 }
 
 pub fn run() -> MyResult<()> {
-    let args = Args::try_parse()?;
+    let args = Args::parse();
     let mode = Mode::from(&args);
     let total_files = args.files.len();
     let print_names = total_files > 1;
