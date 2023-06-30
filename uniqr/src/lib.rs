@@ -68,7 +68,7 @@ pub fn run() -> MyResult<()> {
         }
     };
     write_lines(input, &mut output, args.count)?;
-    output.flush();
+    output.flush()?;
 
     Ok(())
 }
