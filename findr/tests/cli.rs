@@ -1,7 +1,7 @@
 use assert_cmd::Command;
 use predicates::prelude::*;
 use rand::{distributions::Alphanumeric, Rng};
-use std::{borrow::Cow, fs, path::Path};
+use std::{borrow::Cow, fs};
 
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
