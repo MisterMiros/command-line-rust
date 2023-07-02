@@ -70,8 +70,8 @@ fn process_path(path: &str, args: &Args) -> MyResult<()> {
                 if ft.is_symlink() && !args.entry_types.contains(&EntryType::Link) {
                     continue;
                 }
-                let file_name = entry.file_name().to_str().expect("File name are expected to be valid UTF-8");
-                if !args.names.is_empty() && !args.names.iter().any(|n| n.is_match(file_name)) {
+                let file_name = entry.file_name().to_string_lossy();
+                if !args.names.is_empty() && !args.names.iter().any(|n| n.is_match(&file_name)) {
                     continue;
                 }
                 println!("{}", entry.path().display())
