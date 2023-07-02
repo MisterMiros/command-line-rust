@@ -11,6 +11,7 @@ description = "A Rust implementation of Unix `find` command"
 clap = { version = "4", features = ["derive"] }
 shared-utils = { path = "../shared-utils" }
 walkdir = "2"
+regex = "1"
 
 [dev-dependencies]
 assert_cmd = "2"
