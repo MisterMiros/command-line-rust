@@ -1,6 +1,7 @@
-use std::{ops::Range, io::BufRead};
+use std::{io::BufRead, num::NonZeroUsize, ops::Range};
 
 use clap::Parser;
+use regex::Regex;
 use shared_utils::MyResult;
 
 #[derive(Parser, Debug, Clone)]
@@ -51,28 +52,23 @@ fn parse_range(value: &str) -> MyResult<Range<usize>> {
     match split.len() {
         1 => {
             let start = split[0].parse()?;
-            Ok(Range { start, end: start + 1})
-        },
+            Ok(start..start + 1)
+        }
         2 => {
             let start: usize = split[0].parse()?;
             let end: usize = split[1].parse::<usize>()? + 1;
-            Ok(Range { start, end})
-        },
+            Ok(start..end)
+        }
         _ => Err(Box::from("not enough values")),
     }
 }
 
 fn parse_ranges(values: &[String]) -> MyResult<Vec<Range<usize>>> {
-    let mut ranges: Vec<Range<usize>> = Vec::with_capacity(values.len());
-    for value in values {
-        let range = parse_range(value);
-        if let Err(error) = range {
-            return Err(Box::from(format!("illegal list value: \"{value}\", error: {error}")));
-        }
-        ranges.push(range.unwrap());
-    }
-    ranges.sort_by_key(|r| r.start);
-    Ok(ranges)
+    values
+        .iter()
+        .map(|v| parse_range(v).map_err(|e| format!("illegal list value: \"{v}\", error: '{e}'")))
+        .collect::<Result<Vec<Range<usize>>, _>>()
+        .map_err(From::from)
 }
 
 fn get_args() -> MyResult<Args> {
@@ -92,7 +88,11 @@ fn get_args() -> MyResult<Args> {
     })
 }
 
-fn process_ranges<T>(elements: &mut dyn Iterator<Item = T>, ranges: &[Range<usize>], stringify: impl Fn(Vec<T>) -> String) -> Vec<String> {
+fn process_ranges<T>(
+    elements: &mut dyn Iterator<Item = T>,
+    ranges: &[Range<usize>],
+    stringify: impl Fn(Vec<T>) -> String,
+) -> Vec<String> {
     let mut counter = 1;
     let mut values: Vec<String> = Vec::new();
     for range in ranges {
@@ -120,18 +120,21 @@ fn process_input(file: impl BufRead, extract: &Extract) -> MyResult<()> {
             for line in file.lines() {
                 let line = line?;
                 let mut bytes = line.bytes();
-                let values: Vec<String> = process_ranges(bytes.by_ref(), ranges, |b| String::from_utf8_lossy(&b).to_string());
+                let values: Vec<String> = process_ranges(bytes.by_ref(), ranges, |b| {
+                    String::from_utf8_lossy(&b).to_string()
+                });
                 println!("{}", values.join(""));
-            }            
+            }
         }
         Extract::Chars(ranges) => {
             for line in file.lines() {
                 let line = line?;
                 let mut chars = line.chars();
-                let values: Vec<String> = process_ranges(chars.by_ref(), ranges, |c| c.into_iter().collect());
+                let values: Vec<String> =
+                    process_ranges(chars.by_ref(), ranges, |c| c.into_iter().collect());
                 println!("{}", values.join(""));
             }
-        },
+        }
         Extract::Fields(ranges, delim) => {
             let mut rdr = csv::ReaderBuilder::new()
                 .has_headers(false)
@@ -141,7 +144,8 @@ fn process_input(file: impl BufRead, extract: &Extract) -> MyResult<()> {
             for record in rdr.records() {
                 let record = record?;
                 let mut fields = record.into_iter();
-                let values: Vec<String> = process_ranges(fields.by_ref(), ranges, |c| c.join(&delim));
+                let values: Vec<String> =
+                    process_ranges(fields.by_ref(), ranges, |c| c.join(&delim));
                 println!("{}", values.join(&format!("{delim}")));
             }
         }
