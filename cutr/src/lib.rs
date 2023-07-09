@@ -1,7 +1,6 @@
-use std::{io::BufRead, num::NonZeroUsize, ops::Range};
+use std::{io::BufRead, ops::Range};
 
 use clap::Parser;
-use regex::Regex;
 use shared_utils::MyResult;
 
 #[derive(Parser, Debug, Clone)]
