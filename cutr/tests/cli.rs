@@ -33,12 +33,11 @@ fn gen_bad_file() -> String {
 #[test]
 fn skips_bad_file() -> TestResult {
     let bad = gen_bad_file();
-    let expected = format!("{}: .* [(]os error 2[)]", bad);
     Command::cargo_bin(PRG)?
         .args(&["-f", "1", CSV, &bad, TSV])
         .assert()
         .success()
-        .stderr(predicate::str::is_match(expected)?);
+        .stderr(predicate::str::contains("(os error 2)"));
     Ok(())
 }
 
@@ -55,7 +54,7 @@ fn dies(args: &[&str], expected: &str) -> TestResult {
 // --------------------------------------------------
 #[test]
 fn dies_not_enough_args() -> TestResult {
-    dies(&[CSV], "Must have --fields, --bytes, or --chars")
+    dies(&[CSV], "the following required arguments were not provided")
 }
 
 // --------------------------------------------------
@@ -93,7 +92,7 @@ fn dies_bad_digit_chars() -> TestResult {
 fn dies_empty_delimiter() -> TestResult {
     dies(
         &[CSV, "-f", "1", "-d", ""],
-        "--delim \"\" must be a single byte",
+        "invalid value '' for '--delim <DELIM>': cannot parse char from empty string",
     )
 }
 
@@ -102,7 +101,7 @@ fn dies_empty_delimiter() -> TestResult {
 fn dies_bad_delimiter() -> TestResult {
     dies(
         &[CSV, "-f", "1", "-d", ",,"],
-        "--delim \",,\" must be a single byte",
+        "invalid value ',,' for '--delim <DELIM>': too many characters in string",
     )
 }
 

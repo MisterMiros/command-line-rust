@@ -10,8 +10,8 @@ description = "A Rust implementation of Unix `cut` command"
 [dependencies]
 clap = { version = "4", features = ["derive"] }
 shared-utils = { path = "../shared-utils" }
-walkdir = "2"
 regex = "1"
+csv = "1"
 
 [dev-dependencies]
 assert_cmd = "2"
