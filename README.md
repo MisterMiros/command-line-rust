@@ -29,3 +29,11 @@ Exercises from the *"Command-Line Rust" by Ken Youens-Clark* ([link](https://www
 ### Uniqr
 * Location: [uniqr/src/main.rs](uniqr/src/main.rs)
 * Description: Shrunks duplicate lines with optional counting of given files or of stdin
+
+### Cutr
+* Location: [cutr/src/main.rs](cutr/src/main.rs)
+* Description: Cuts out selected portions of each line of a file
+
+### Grepr
+* Location: [grepr/src/main.rs](grepr/src/main.rs)
+* Description: Searches any given input files, selecting lines that match the pattern
