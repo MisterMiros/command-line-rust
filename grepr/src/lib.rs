@@ -1,20 +1,10 @@
 use std::fs;
 use std::io::BufRead;
-use std::iter;
 
 use clap::Parser;
 use regex::{Regex, RegexBuilder};
 use shared_utils::MyResult;
 use walkdir::WalkDir;
-
-macro_rules! print_match {
-    ($result: ident, $filename: ident) => {
-        match $filename {
-            Some(filename) => println!("{}:{}", filename, $result),
-            None => println!("{}", $result),
-        }
-    };
-}
 
 #[derive(Parser, Debug)]
 #[command(author, version, about)]
@@ -68,18 +58,25 @@ fn get_args() -> MyResult<Args> {
     }
 }
 
+macro_rules! print_match {
+    ($result: ident, $filename: ident) => {
+        match $filename {
+            Some(filename) => println!("{}:{}", filename, $result),
+            None => println!("{}", $result),
+        }
+    };
+}
+
 fn process_file(file: impl BufRead, args: &Args, filename: &Option<&str>) -> MyResult<()> {
     let mut count = 0;
     for line in file.lines() {
         let line = line?;
-        match (args.invert_match, args.pattern.is_match(&line)) {
-            (true, false) | (false, true) => {
-                count += 1;
-                if !args.count {
-                    print_match!(line, filename);
-                }
+        let is_match = args.pattern.is_match(&line);
+        if let (true, false) | (false, true) = (args.invert_match, is_match) {
+            count += 1;
+            if !args.count {
+                print_match!(line, filename);
             }
-            _ => (),
         }
     }
     if args.count {
@@ -88,39 +85,57 @@ fn process_file(file: impl BufRead, args: &Args, filename: &Option<&str>) -> MyR
     Ok(())
 }
 
-fn process_path(path: &str, recursive: bool) -> Box<dyn Iterator<Item = MyResult<String>>> {
+macro_rules! ok_once {
+    ($value: expr) => {
+        Box::from(std::iter::once(Ok(From::from($value))))
+    };
+}
+
+macro_rules! err_once {
+    ($value: expr) => {
+        Box::from(std::iter::once(Err(From::from($value))))
+    };
+}
+
+macro_rules! is_dir {
+    ($file: ident) => {
+        $file.file_type().is_dir()
+    };
+}
+
+type DynIter<T> = Box<dyn Iterator<Item = T>>;
+
+fn process_path(path: &str, recursive: bool) -> DynIter<MyResult<String>> {
     if path == "-" {
-        return Box::from(iter::once(Ok(String::from(path))));
+        return ok_once!(path);
     }
 
     let file_metadata = fs::metadata(path);
     if let Err(error) = file_metadata {
-        return Box::from(iter::once(Err(From::from(format!("{path}: {error}")))));
+        return err_once!(format!("{path}: {error}"));
     }
 
     let file_metadata = file_metadata.unwrap();
-    let is_dir = file_metadata.file_type().is_dir();
-    if is_dir && !recursive {
-        let error = format!("{path} is a directory");
-        return Box::from(iter::once(Err(From::from(error))));
+    if !is_dir!(file_metadata) {
+        return ok_once!(path);
     }
 
-    if is_dir {
-        let file_tree = WalkDir::new(path);
-        let paths = file_tree.into_iter().filter_map(move |f| match f {
-            Ok(file) => {
-                if file.file_type().is_dir() {
-                    None
-                } else {
-                    Some(Ok(String::from(file.path().to_string_lossy().into_owned())))
-                }
+    if !recursive {
+        return err_once!(format!("{path} is a directory"));
+    }
+
+    let file_tree = WalkDir::new(path);
+    let paths = file_tree.into_iter().filter_map(move |f| match f {
+        Ok(file) => {
+            if is_dir!(file) {
+                None
+            } else {
+                Some(Ok(String::from(file.path().to_string_lossy().into_owned())))
             }
-            Err(error) => Some(Err(From::from(error))),
-        });
-        return Box::from(paths);
-    }
-
-    Box::from(iter::once(Ok(String::from(path))))
+        }
+        Err(error) => Some(Err(From::from(error))),
+    });
+    Box::from(paths)
 }
 
 pub fn run() -> MyResult<()> {
