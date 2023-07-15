@@ -3,14 +3,14 @@ use std::io::BufRead;
 use std::iter;
 
 use clap::Parser;
-use regex::Regex;
+use regex::{Regex, RegexBuilder};
 use shared_utils::MyResult;
 use walkdir::WalkDir;
 
 macro_rules! print_match {
     ($result: ident, $filename: ident) => {
         match $filename {
-            Some(filename) => println!("{}: {}", filename, $result),
+            Some(filename) => println!("{}:{}", filename, $result),
             None => println!("{}", $result),
         }
     };
@@ -38,9 +38,9 @@ struct RawArgs {
     /// Recursive search through directories
     #[arg(short, long)]
     recursive: bool,
-    
+
     #[arg(short, long)]
-    ignore_case: bool,
+    insensitive: bool,
 }
 
 struct Args {
@@ -49,22 +49,23 @@ struct Args {
     count: bool,
     invert_match: bool,
     recursive: bool,
-    ignore_case: bool,
 }
 
 fn get_args() -> MyResult<Args> {
     let args = RawArgs::try_parse()?;
-    let pattern = regex::RegexBuilder::new(&args.pattern)
-        .case_insensitive(args.ignore_case)
-        .build()?;
-    Ok(Args {
-        paths: args.paths,
-        count: args.count,
-        invert_match: args.invert_match,
-        recursive: args.recursive,
-        ignore_case: args.ignore_case,
-        pattern,
-    })
+    let result = RegexBuilder::new(&args.pattern)
+        .case_insensitive(args.insensitive)
+        .build();
+    match result {
+        Err(_) => Err(From::from(format!("Invalid pattern \"{}\"", args.pattern))),
+        Ok(pattern) => Ok(Args {
+            paths: args.paths,
+            count: args.count,
+            invert_match: args.invert_match,
+            recursive: args.recursive,
+            pattern,
+        }),
+    }
 }
 
 fn process_file(file: impl BufRead, args: &Args, filename: &Option<&str>) -> MyResult<()> {
@@ -78,7 +79,7 @@ fn process_file(file: impl BufRead, args: &Args, filename: &Option<&str>) -> MyR
                     print_match!(line, filename);
                 }
             }
-            _ => ()
+            _ => (),
         }
     }
     if args.count {
@@ -91,16 +92,19 @@ fn process_path(path: &str, recursive: bool) -> Box<dyn Iterator<Item = MyResult
     if path == "-" {
         return Box::from(iter::once(Ok(String::from(path))));
     }
+
     let file_metadata = fs::metadata(path);
     if let Err(error) = file_metadata {
-        return Box::from(iter::once(Err(From::from(error))));
+        return Box::from(iter::once(Err(From::from(format!("{path}: {error}")))));
     }
+
     let file_metadata = file_metadata.unwrap();
     let is_dir = file_metadata.file_type().is_dir();
     if is_dir && !recursive {
-        let error = format!("{path}: Is a directory");
+        let error = format!("{path} is a directory");
         return Box::from(iter::once(Err(From::from(error))));
     }
+
     if is_dir {
         let file_tree = WalkDir::new(path);
         let paths = file_tree.into_iter().filter_map(move |f| match f {
@@ -115,25 +119,36 @@ fn process_path(path: &str, recursive: bool) -> Box<dyn Iterator<Item = MyResult
         });
         return Box::from(paths);
     }
+
     Box::from(iter::once(Ok(String::from(path))))
 }
 
 pub fn run() -> MyResult<()> {
     let args = get_args()?;
-    let print_filenames = args.paths.len() > 1;
-    for path in &args.paths {
-        let filenames = process_path(path, args.recursive);
-        filenames.map(|filename| {
+    let filenames: Vec<_> = args
+        .paths
+        .iter()
+        .flat_map(|p| process_path(p, args.recursive))
+        .collect();
+    let print_filenames = filenames.len() > 1;
+
+    filenames
+        .into_iter()
+        .map(|filename| {
             let filename = filename?;
             let file = shared_utils::open(&Some(&filename))?;
-            let filename = if print_filenames { Some(filename.as_str()) } else { None };
+            let filename = if print_filenames {
+                Some(filename.as_str())
+            } else {
+                None
+            };
             process_file(file, &args, &filename)?;
             Ok(())
-        }).for_each(|r: MyResult<()>| {
+        })
+        .for_each(|r: MyResult<()>| {
             if let Err(error) = r {
                 eprintln!("{error}");
             }
         });
-    }
     Ok(())
 }
