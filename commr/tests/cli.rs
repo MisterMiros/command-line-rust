@@ -17,7 +17,7 @@ fn dies_no_args() -> TestResult {
     Command::cargo_bin(PRG)?
         .assert()
         .failure()
-        .stderr(predicate::str::contains("USAGE"));
+        .stderr(predicate::str::contains("Usage"));
     Ok(())
 }
 
@@ -65,7 +65,7 @@ fn dies_bad_file2() -> TestResult {
 // --------------------------------------------------
 #[test]
 fn dies_both_stdin() -> TestResult {
-    let expected = "Both input files cannot be STDIN (\"-\")";
+    let expected = "Both input files cannot be STDIN";
     Command::cargo_bin(PRG)?
         .args(&["-", "-"])
         .assert()
