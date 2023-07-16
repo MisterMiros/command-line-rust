@@ -74,19 +74,18 @@ macro_rules! print_common {
     };
 }
 
-fn compare(str1: &str, str2: &str, insensitive: bool) -> Ordering {
-    if insensitive {
-        str1.to_lowercase().cmp(&str2.to_lowercase())
-    } else {
-        str1.cmp(str2)
-    }
-}
-
 fn process_files(file1: impl BufRead, file2: impl BufRead, args: &Args) -> MyResult<()> {
-    let mut lines1 = file1.lines();
-    let mut lines2 = file2.lines();
+    let case = |s: String| {
+        if args.insensitive {
+            s.to_lowercase()
+        } else {
+            s
+        }
+    };
+    let mut lines1 = file1.lines().map(|r| r.map(case));
+    let mut lines2 = file2.lines().map(|r| r.map(case));
     let mut line_pair = (lines1.next(), lines2.next());
-    
+
     loop {
         line_pair = match line_pair {
             (None, None) => break,
@@ -99,7 +98,7 @@ fn process_files(file1: impl BufRead, file2: impl BufRead, args: &Args) -> MyRes
                 print_second!(str2, args);
                 (None, lines2.next())
             }
-            (Some(Ok(str1)), Some(Ok(str2))) => match compare(&str1, &str2, args.insensitive) {
+            (Some(Ok(str1)), Some(Ok(str2))) => match str1.cmp(&str2) {
                 Ordering::Greater => {
                     print_second!(str2, args);
                     (Some(Ok(str1)), lines2.next())
