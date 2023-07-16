@@ -40,38 +40,32 @@ fn get_args() -> MyResult<Args> {
     Ok(args)
 }
 
-macro_rules! print_first {
-    ($value: ident, $args: ident) => {
-        if !$args.suppress_first {
-            println!("{}", $value);
-        }
-    };
+fn print_first(value: &str, args: &Args) {
+    if !args.suppress_first {
+        println!("{}", value);
+    }
 }
 
-macro_rules! print_second {
-    ($value: ident, $args: ident) => {
-        if !$args.suppress_second {
-            if ($args.suppress_first) {
-                println!("{}", $value);
-            } else {
-                println!("{}{}", $args.delimiter, $value);
-            }
+fn print_second(value: &str, args: &Args) {
+    if !args.suppress_second {
+        if args.suppress_first {
+            println!("{}", value);
+        } else {
+            println!("{}{}", args.delimiter, value);
         }
-    };
+    }
 }
 
-macro_rules! print_common {
-    ($value: ident, $args: ident) => {
-        if !$args.suppress_common {
-            if $args.suppress_first && $args.suppress_second {
-                println!("{}", $value);
-            } else if $args.suppress_first || $args.suppress_second {
-                println!("{}{}", $args.delimiter, $value);
-            } else {
-                println!("{0}{0}{1}", $args.delimiter, $value);
-            }
+fn print_common(value: &str, args: &Args) {
+    if !args.suppress_common {
+        if args.suppress_first && args.suppress_second {
+            println!("{}", value);
+        } else if args.suppress_first || args.suppress_second {
+            println!("{}{}", args.delimiter, value);
+        } else {
+            println!("{0}{0}{1}", args.delimiter, value);
         }
-    };
+    }
 }
 
 fn process_files(file1: impl BufRead, file2: impl BufRead, args: &Args) -> MyResult<()> {
@@ -81,7 +75,8 @@ fn process_files(file1: impl BufRead, file2: impl BufRead, args: &Args) -> MyRes
         } else {
             s
         }
-    };
+    };    
+    
     let mut lines1 = file1.lines().map(|r| r.map(case));
     let mut lines2 = file2.lines().map(|r| r.map(case));
     let mut line_pair = (lines1.next(), lines2.next());
@@ -91,24 +86,24 @@ fn process_files(file1: impl BufRead, file2: impl BufRead, args: &Args) -> MyRes
             (None, None) => break,
             (Some(Err(error)), _) | (_, Some(Err(error))) => return Err(From::from(error)),
             (Some(Ok(str1)), None) => {
-                print_first!(str1, args);
+                print_first(&str1, args);
                 (lines1.next(), None)
             }
             (None, Some(Ok(str2))) => {
-                print_second!(str2, args);
+                print_second(&str2, args);
                 (None, lines2.next())
             }
             (Some(Ok(str1)), Some(Ok(str2))) => match str1.cmp(&str2) {
                 Ordering::Greater => {
-                    print_second!(str2, args);
+                    print_second(&str2, args);
                     (Some(Ok(str1)), lines2.next())
                 }
                 Ordering::Less => {
-                    print_first!(str1, args);
+                    print_first(&str1, args);
                     (lines1.next(), Some(Ok(str2)))
                 }
                 Ordering::Equal => {
-                    print_common!(str1, args);
+                    print_common(&str1, args);
                     (lines1.next(), lines2.next())
                 }
             },
