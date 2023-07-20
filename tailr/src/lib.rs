@@ -68,7 +68,7 @@ fn get_args() -> MyResult<Args> {
     })
 }
 
-fn print_file(filename: &str, file: Box<dyn BufRead>, mode: &Mode) -> MyResult<()> {
+fn process_file(filename: &str, file: Box<dyn BufRead>, mode: &Mode) -> MyResult<()> {
     match mode {
         Mode::BytesFrom(index) => {
             let iter = file.bytes();
@@ -132,7 +132,7 @@ pub fn run() -> MyResult<()> {
             println!("{error}");
         }
         let file = file.unwrap();
-        if let Err(error) = print_file(&filename, file, &args.mode) {
+        if let Err(error) = process_file(&filename, file, &args.mode) {
             println!("{filename}: {error}");
         }
         let is_last = num + 1 == total_files;
