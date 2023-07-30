@@ -1,0 +1,21 @@
+[package]
+authors = ["Miroslav Bogatyrev"]
+name = "fortuner"
+version = "0.1.0"
+edition = "2021"
+description = "A Rust implementation of Unix `fortune` command"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+regex = "1"
+walkdir = "2"
+shared-utils = { path = "../shared-utils" }
+rand = "0"
+
+[dev-dependencies]
+assert_cmd = "2"
+predicates = "3"
+rand = "0"
+sys-info = "0.9"
