@@ -1,0 +1,18 @@
+[package]
+authors = ["Miroslav Bogatyrev"]
+name = "calr"
+version = "0.1.0"
+edition = "2021"
+description = "A Rust implementation of Unix `cal` command"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+shared-utils = { path = "../shared-utils" }
+
+[dev-dependencies]
+assert_cmd = "2"
+predicates = "3"
+rand = "0"
+sys-info = "0.9"
