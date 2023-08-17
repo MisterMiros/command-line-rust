@@ -56,3 +56,8 @@ Exercises from the *"Command-Line Rust" by Ken Youens-Clark* ([link](https://www
 
 * Location: [fortuner/src/main.rs](fortuner/src/main.rs), [fortuner/src/lib.rs](fortuner/src/lib.rs)
 * Description: Outputs a random line from given files or stdin or all lines that match a pattern.
+
+### Calr
+
+* Location: [calr/src/main.rs](calr/src/main.rs), [calr/src/lib.rs](calr/src/lib.rs)
+* Description: Prints a calendar of the given month and year or of the current month and year.
