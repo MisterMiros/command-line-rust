@@ -35,7 +35,7 @@ fn dies_invalid_year() -> TestResult {
         .arg("foo")
         .assert()
         .failure()
-        .stderr("Invalid integer \"foo\"\n");
+        .stderr(predicate::str::contains("invalid digit found in string"));
     Ok(())
 }
 
@@ -75,7 +75,7 @@ fn dies_invalid_month() -> TestResult {
 // --------------------------------------------------
 #[test]
 fn dies_y_and_month() -> TestResult {
-    let expected = "The argument '-m <MONTH>' cannot be used with '--year'";
+    let expected = "the argument '--month <MONTH>' cannot be used with '--year'";
     Command::cargo_bin(PRG)?
         .args(&["-m", "1", "-y"])
         .assert()
@@ -87,9 +87,9 @@ fn dies_y_and_month() -> TestResult {
 // --------------------------------------------------
 #[test]
 fn dies_y_and_year() -> TestResult {
-    let expected = "The argument '<YEAR>' cannot be used with '--year'";
+    let expected = "the argument '[YEAR]' cannot be used with '--year'";
     Command::cargo_bin(PRG)?
-        .args(&["-y", "2000"])
+        .args(&["2000", "-y"])
         .assert()
         .failure()
         .stderr(predicate::str::contains(expected));
