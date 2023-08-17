@@ -1,5 +1,6 @@
 use chrono::{Datelike, Duration, Local, NaiveDate, Weekday};
 use clap::Parser;
+use colorize::{AnsiColor, Style};
 use shared_utils::MyResult;
 
 const ROW_WIDTH: usize = 20;
@@ -59,7 +60,11 @@ fn parse_month(input: &str) -> MyResult<u32> {
         }
     }
 
-    let month: Vec<_> = MONTHS.iter().enumerate().filter(|(_, s)| s.to_lowercase().starts_with(input)).collect();
+    let month: Vec<_> = MONTHS
+        .iter()
+        .enumerate()
+        .filter(|(_, s)| s.to_lowercase().starts_with(input))
+        .collect();
     if month.len() != 1 {
         return Err(format!("Invalid month \"{input}\"").into());
     }
@@ -111,7 +116,6 @@ fn format_month(year: i32, month: u32, print_year: bool, today: NaiveDate) -> [S
     };
     result[0] = header;
 
-
     result[1] = String::from(WEEK);
 
     let day = NaiveDate::from_ymd_opt(year, month, 1).unwrap();
@@ -123,11 +127,11 @@ fn format_month(year: i32, month: u32, print_year: bool, today: NaiveDate) -> [S
             .map(|i| {
                 let day = week.first_day() + Duration::days(i);
                 if day.month() == month {
+                    let mut fmt = format!("{:>2}", day.day());
                     if day == today {
-                        format!("\u{1b}[7m{:>2}\u{1b}[0m ", day.day())
-                    } else {
-                        format!("{:>2} ", day.day())
+                        fmt = fmt.reverse().to_string();
                     }
+                    format!("{fmt} ")
                 } else {
                     String::from("   ")
                 }
@@ -158,7 +162,10 @@ pub fn run() -> MyResult<()> {
             .map(|m| format_month(args.year, *m, false, args.today))
             .collect();
         for i in 0..8 {
-            println!("{} {} {}", formatted_months[0][i], formatted_months[1][i], formatted_months[2][i])
+            println!(
+                "{} {} {}",
+                formatted_months[0][i], formatted_months[1][i], formatted_months[2][i]
+            )
         }
         println!();
     }
@@ -197,7 +204,7 @@ fn test_format_month() {
         "     April 2021      ",
         "Su Mo Tu We Th Fr Sa ",
         "             1  2  3 ",
-        " 4  5  6 \u{1b}[7m 7\u{1b}[0m  8  9 10 ",
+        " 4  5  6 \u{1b}[7m 7\u{1b}[0;39;49m  8  9 10 ",
         "11 12 13 14 15 16 17 ",
         "18 19 20 21 22 23 24 ",
         "25 26 27 28 29 30    ",
