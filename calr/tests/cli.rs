@@ -170,7 +170,7 @@ fn default_one_month() -> TestResult {
     let stdout = String::from_utf8(out.stdout.clone())?;
     let lines: Vec<_> = stdout.split("\n").collect();
     assert_eq!(lines.len(), 9);
-    assert_eq!(lines[0].len(), 22);
+    assert_eq!(lines[0].len(), 21);
     Ok(())
 }
 
@@ -204,6 +204,6 @@ fn year() -> TestResult {
     let cmd = Command::cargo_bin(PRG)?.arg("-y").assert().success();
     let stdout = String::from_utf8(cmd.get_output().stdout.clone())?;
     let lines: Vec<&str> = stdout.split("\n").collect();
-    assert_eq!(lines.len(), 37);
+    assert_eq!(lines.len(), 38);
     Ok(())
 }
