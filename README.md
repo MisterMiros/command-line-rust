@@ -61,3 +61,9 @@ Exercises from the *"Command-Line Rust" by Ken Youens-Clark* ([link](https://www
 
 * Location: [calr/src/main.rs](calr/src/main.rs), [calr/src/lib.rs](calr/src/lib.rs)
 * Description: Prints a calendar of the given month and year or of the current month and year.
+
+### Lsr
+
+* Location: [lsr/src/main.rs](lsr/src/main.rs), [lsr/src/lib.rs](lsr/src/lib.rs)
+* Description: Displays contents of given directories
+* Note: I made all the development on Windows Subsystem for Linux platform and it doesn't support permissions by default. So I decided to change the tests to always expect full set of permissions, but I'm sure it'll work correctly on the Linux/Unix systems just fine. 
