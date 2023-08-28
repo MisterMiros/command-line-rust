@@ -83,7 +83,7 @@ fn empty() -> TestResult {
 
 #[test]
 fn empty_long() -> TestResult {
-    run_long(EMPTY, "-rw-r--r--", "0")
+    run_long(EMPTY, "-rwxrwxrwx", "0")
 }
 
 // --------------------------------------------------
@@ -94,7 +94,7 @@ fn bustle() -> TestResult {
 
 #[test]
 fn bustle_long() -> TestResult {
-    run_long(BUSTLE, "-rw-r--r--", "193")
+    run_long(BUSTLE, "-rwxrwxrwx", "193")
 }
 
 // --------------------------------------------------
@@ -105,7 +105,7 @@ fn fox() -> TestResult {
 
 #[test]
 fn fox_long() -> TestResult {
-    run_long(FOX, "-rw-------", "45")
+    run_long(FOX, "-rwxrwxrwx", "45")
 }
 
 // --------------------------------------------------
@@ -116,7 +116,7 @@ fn hidden() -> TestResult {
 
 #[test]
 fn hidden_long() -> TestResult {
-    run_long(HIDDEN, "-rw-r--r--", "0")
+    run_long(HIDDEN, "-rwxrwxrwx", "0")
 }
 
 // --------------------------------------------------
@@ -205,10 +205,10 @@ fn dir1_long() -> TestResult {
     dir_long(
         &["-l", "tests/inputs"],
         &[
-            ("tests/inputs/empty.txt", "-rw-r--r--", "0"),
-            ("tests/inputs/bustle.txt", "-rw-r--r--", "193"),
-            ("tests/inputs/fox.txt", "-rw-------", "45"),
-            ("tests/inputs/dir", "drwxr-xr-x", ""),
+            ("tests/inputs/empty.txt", "-rwxrwxrwx", "0"),
+            ("tests/inputs/bustle.txt", "-rwxrwxrwx", "193"),
+            ("tests/inputs/fox.txt", "-rwxrwxrwx", "45"),
+            ("tests/inputs/dir", "drwxrwxrwx", ""),
         ],
     )
 }
@@ -218,11 +218,11 @@ fn dir1_long_all() -> TestResult {
     dir_long(
         &["-la", "tests/inputs"],
         &[
-            ("tests/inputs/empty.txt", "-rw-r--r--", "0"),
-            ("tests/inputs/bustle.txt", "-rw-r--r--", "193"),
-            ("tests/inputs/fox.txt", "-rw-------", "45"),
-            ("tests/inputs/dir", "drwxr-xr-x", ""),
-            ("tests/inputs/.hidden", "-rw-r--r--", "0"),
+            ("tests/inputs/empty.txt", "-rwxrwxrwx", "0"),
+            ("tests/inputs/bustle.txt", "-rwxrwxrwx", "193"),
+            ("tests/inputs/fox.txt", "-rwxrwxrwx", "45"),
+            ("tests/inputs/dir", "drwxrwxrwx", ""),
+            ("tests/inputs/.hidden", "-rwxrwxrwx", "0"),
         ],
     )
 }
@@ -231,7 +231,7 @@ fn dir1_long_all() -> TestResult {
 fn dir2_long() -> TestResult {
     dir_long(
         &["--long", "tests/inputs/dir"],
-        &[("tests/inputs/dir/spiders.txt", "-rw-r--r--", "45")],
+        &[("tests/inputs/dir/spiders.txt", "-rwxrwxrwx", "45")],
     )
 }
 
@@ -240,8 +240,8 @@ fn dir2_long_all() -> TestResult {
     dir_long(
         &["tests/inputs/dir", "--long", "--all"],
         &[
-            ("tests/inputs/dir/spiders.txt", "-rw-r--r--", "45"),
-            ("tests/inputs/dir/.gitkeep", "-rw-r--r--", "0"),
+            ("tests/inputs/dir/spiders.txt", "-rwxrwxrwx", "45"),
+            ("tests/inputs/dir/.gitkeep", "-rwxrwxrwx", "0"),
         ],
     )
 }
